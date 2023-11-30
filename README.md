@@ -1,4 +1,4 @@
-# blazor-rte-import-export-html
+# Blazor-RTE-Import-Export-HTML
 A quick-start project that helps you how to Import and Export HTML Files in Blazor Rich Text Editor Component. 
 
 # Project prerequisites
