@@ -1,0 +1,129 @@
+﻿@page "/"
+
+@using Syncfusion.Blazor.RichTextEditor
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.DocIO
+@using Syncfusion.DocIO.DLS
+
+<SfRichTextEditor @bind-Value="htmlString" EnableXhtml="true">
+	<RichTextEditorToolbarSettings Items="Tools">
+        <RichTextEditorCustomToolbarItems>
+            <RichTextEditorCustomToolbarItem Name="Import">
+                <Template>
+                    <SfUploader ID="UploadFiles" ShowFileList="false" CssClass="e-import">
+                        <UploaderAsyncSettings SaveUrl="api/SampleData/Import"></UploaderAsyncSettings>
+                        <UploaderEvents Success="OnSuccess"></UploaderEvents>
+                        <UploaderButtons Browse=""></UploaderButtons>
+                    </SfUploader>
+                </Template>
+            </RichTextEditorCustomToolbarItem>
+            <RichTextEditorCustomToolbarItem Name="Export">
+                <Template>
+                    <SfButton OnClick="DownloadFile" CssClass="e-icons e-export"></SfButton>
+                </Template>
+            </RichTextEditorCustomToolbarItem>
+        </RichTextEditorCustomToolbarItems>
+    </RichTextEditorToolbarSettings>
+</SfRichTextEditor>
+
+<style>
+
+    .e-btn.e-icons.e-export::before {
+        content: '\e780';
+        color: #fff;
+    }
+
+    .e-richtexteditor .e-rte-toolbar .e-toolbar-item .e-icons.e-export {
+        padding: 8px;
+    }
+
+    .e-import.e-upload .e-upload-browse-btn {
+        font-family: "e-icons";
+    }
+
+    .e-import.e-upload .e-file-select-wrap {
+        padding: 0px;
+    }
+
+    .e-import.e-upload .e-file-drop, .e-import.e-upload .e-file-select {
+        display: none;
+    }
+
+    .e-import .e-upload-browse-btn::before {
+        content: '\e726';
+    }
+</style>
+
+@code {
+
+    [Inject]
+    IJSRuntime? jsRuntime { get; set; }
+
+    public string? htmlString { get; set; } = @"In Blazor RichTextEditor, importing to HTML involves loading content 
+    from an external HTML file, enabling users to edit or display previously saved HTML content. Exporting to
+    HTML pertains to saving the current RichTextEditor content in HTML format,facilitating storage or sharing of 
+    edited material.These features enhance the component's utility by seamlessly integrating with HTML files for
+    content manipulation.";
+
+    private List<ToolbarItemModel> Tools = new List<ToolbarItemModel>()
+    {
+        new ToolbarItemModel() { Command = ToolbarCommand.Bold },
+        new ToolbarItemModel() { Command = ToolbarCommand.Italic },
+        new ToolbarItemModel() { Command = ToolbarCommand.Underline },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.Formats },
+        new ToolbarItemModel() { Command = ToolbarCommand.Alignments },
+        new ToolbarItemModel() { Command = ToolbarCommand.OrderedList },
+        new ToolbarItemModel() { Command = ToolbarCommand.UnorderedList },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.CreateLink },
+        new ToolbarItemModel() { Command = ToolbarCommand.CreateTable },
+        new ToolbarItemModel() { Command = ToolbarCommand.Image },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.SourceCode },
+        new ToolbarItemModel() { Command = ToolbarCommand.Undo },
+        new ToolbarItemModel() { Command = ToolbarCommand.Redo },
+        new ToolbarItemModel() { Name = "Import", TooltipText = "Import the HTML file" },
+        new ToolbarItemModel() { Name = "Export", TooltipText = "Export into HTML file" }
+    };
+
+    public async void DownloadFile()
+    {
+        if (htmlString != null && jsRuntime != null)
+        {
+            WordDocument document = GetDocument(htmlString);
+            MemoryStream stream = new MemoryStream();
+            document.Save(stream, FormatType.Html);
+            await SaveAs(jsRuntime, "record1.html", stream.ToArray());
+            document.Close();
+            stream.Flush();
+            stream.Dispose();
+        }
+    }
+
+    public async Task OnSuccess(SuccessEventArgs args)
+    {
+        var headers = args.Response.Headers.ToString();
+        var header = headers.Split("rtevalue: ");
+        header = header[1].Split("\r");
+        this.htmlString = header[0];
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public WordDocument GetDocument(string htmlText)
+    {
+        WordDocument document = new WordDocument();
+        IWSection section = document.AddSection();
+        IWParagraph paragraph = section.AddParagraph();
+        paragraph.AppendHTML(htmlText);
+        return document;
+    }
+
+    public async Task SaveAs(IJSRuntime js, string filename, byte[] data)
+    {
+        await js.InvokeAsync<object>(
+            "saveAsFile",
+            filename,
+            Convert.ToBase64String(data));
+    }
+}
