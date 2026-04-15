@@ -1,4 +1,4 @@
-# Blazor Rich Text Editor — Import/Export & Image Upload (with Auth)
+# Blazor Rich Text Editor — Import/Export
 
 This sample demonstrates importing/exporting HTML with the Syncfusion Blazor Rich Text Editor and shows a simple image-upload flow where the client adds authentication data before uploading.
 
