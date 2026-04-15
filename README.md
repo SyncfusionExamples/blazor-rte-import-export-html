@@ -1,8 +1,8 @@
-# Blazor RTE — Import/Export & Image Upload (with Auth)
+# Blazor Rich Text Editor — Import/Export & Image Upload (with Auth)
 
 This sample demonstrates importing/exporting HTML with the Syncfusion Blazor Rich Text Editor and shows a simple image-upload flow where the client adds authentication data before uploading.
 
-## What this sample shows
+## Overview
 
 - Import and export HTML content with the Rich Text Editor.
 - Send images from the editor to a server endpoint and include custom form data (for example an auth token and user id) before upload.
@@ -41,4 +41,9 @@ Keep in mind this example uses a static `authToken` string for demonstration —
 
 ## Support
 
-This example is for demonstration. Open an issue in the repository if you need help or want clarification.
+This sample is provided for demonstration purposes. For issues, open an issue in the repository.
+
+## See also
+
+- [Online examples](https://blazor.syncfusion.com/demos/rich-text-editor/overview?theme=fluent2)
+- [Documentation](https://blazor.syncfusion.com/documentation/rich-text-editor/getting-started-webapp)
